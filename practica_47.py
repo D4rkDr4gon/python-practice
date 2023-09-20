@@ -22,7 +22,17 @@ class Estudiante:
 
     def modificar_informacion(self):
         print("Modificar información del estudiante:")
-        self.nombre = input("Nuevo nombre: ")
+        print("1. cambiar nombre")
+        print("2. cambiar contraseña")
+        print("3. salir")
+        opcion = input("q desea hacer:")
+        if opcion == 1:
+            self.nombre = input("Nuevo nombre: ")
+        elif opcion == 2:
+            self.clave = input("Nueva clave: ")
+        elif opcion == 3:
+            return
+        
         print("Información modificada con éxito.")
 
 def validar_email(email):
