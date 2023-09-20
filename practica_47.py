@@ -4,20 +4,37 @@ import pickle
 # Módulo 1: Gestor de Estudiantes
 
 class Estudiante:
-    def __init__(self, email, clave):
+    def __init__(self, nombre, email, clave):
         global numero_legajo
         self.legajo = numero_legajo
         numero_legajo += 1
         self.email = email
         self.clave = clave
-        self.nombre = ""
-        self.meritos = 0
+        self.nombre = nombre
+        self.meritos = 1000
+
+    def ver_informacion(self):
+        print(f"Información del estudiante:")
+        print(f"Legajo: {self.legajo}")
+        print(f"Nombre: {self.nombre}")
+        print(f"Email: {self.email}")
+        print(f"Méritos disponibles: {self.meritos}")
+
+    def modificar_informacion(self):
+        print("Modificar información del estudiante:")
+        self.nombre = input("Nuevo nombre: ")
+        print("Información modificada con éxito.")
 
 def validar_email(email):
     patron = r'\b[A-Za-z0-9._%+-]+@frba.utn.edu.ar\b'
     return bool(re.match(patron, email))
 
-def registrar_estudiante(estudiantes, email, clave):
+def registrar_estudiante(estudiantes):
+    print("Crear nueva cuenta de estudiante:")
+    nombre = input("Nombre del estudiante: ")
+    email = input("Ingrese el email del estudiante: ")
+    clave = input("Ingrese la clave del estudiante: ")
+
     if not validar_email(email):
         print("Email no válido.")
         return
@@ -27,7 +44,7 @@ def registrar_estudiante(estudiantes, email, clave):
             print("El email ya está registrado.")
             return
 
-    estudiantes.append(Estudiante(email, clave))
+    estudiantes.append(Estudiante(nombre, email, clave))
     print("Registro exitoso.")
 
 # Módulo 2: Gestor de Beneficios y Acreditación de Logros
@@ -59,44 +76,53 @@ def iniciar_sesion(estudiantes, beneficios):
     for estudiante in estudiantes:
         if estudiante.email == email and estudiante.clave == clave:
             print("Inicio de sesión exitoso.")
-            ver_y_modificar_informacion(estudiante)
+            mostrar_menu_beneficios(estudiante, beneficios)
             guardar_registros(estudiantes, beneficios)
             return
 
     print("Credenciales incorrectas.")
 
-def ver_y_modificar_informacion(estudiante):
-    print("--- Información del Estudiante ---")
-    print(f"Nombre: {estudiante.nombre}")
-    print(f"Email: {estudiante.email}")
-    print(f"Cantidad de Méritos: {estudiante.meritos}")
-    print(f"Legajo: {estudiante.legajo}")
-    print(f"Clave: {estudiante.clave}")
-
+def mostrar_menu_beneficios(estudiante, beneficios):
     while True:
-        print("\n1. Modificar Nombre")
-        print("2. Modificar Email")
-        print("3. Modificar Clave")
-        print("4. Salir")
+        print("\n--- Menú de Beneficios ---")
+        print("1. Mostrar créditos disponibles")
+        print("2. Mostrar beneficios disponibles")
+        print("3. Consumir un beneficio")
+        print("4. Acreditar logros")
+        print("5. Ver mi información")
+        print("6. Modificar mi información")
+        print("7. Cerrar sesión")
 
         opcion = input("Elija una opción: ")
 
         if opcion == '1':
-            nuevo_nombre = input("Ingrese el nuevo nombre: ")
-            estudiante.nombre = nuevo_nombre
-            print("Nombre modificado.")
+            print(f"Créditos disponibles: {estudiante.meritos}")
         elif opcion == '2':
-            nuevo_email = input("Ingrese el nuevo email: ")
-            estudiante.email = nuevo_email
-            print("Email modificado.")
+            listar_beneficios(beneficios)
         elif opcion == '3':
-            nueva_clave = input("Ingrese la nueva clave: ")
-            estudiante.clave = nueva_clave
-            print("Clave modificada.")
+            consumir_beneficio(estudiante, beneficios)
         elif opcion == '4':
-            break
+            puntos = int(input("Ingrese la cantidad de puntos a acreditar: "))
+            acreditar_logros(estudiante, puntos)
+        elif opcion == '5':
+            estudiante.ver_informacion()
+        elif opcion == '6':
+            estudiante.modificar_informacion()
+        elif opcion == '7':
+            return
         else:
             print("Opción no válida. Intente nuevamente.")
+
+def consumir_beneficio(estudiante, beneficios):
+    nombre_beneficio = input("Ingrese el nombre del beneficio que desea consumir: ")
+
+    for beneficio in beneficios:
+        if beneficio.nombre == nombre_beneficio and beneficio.costo <= estudiante.meritos:
+            estudiante.meritos -= beneficio.costo
+            print(f"Beneficio '{nombre_beneficio}' consumido. Créditos restantes: {estudiante.meritos}")
+            return
+
+    print("No se pudo consumir el beneficio.")
 
 # Módulo 4: Administración
 
@@ -146,13 +172,30 @@ def modificar_datos_estudiante(estudiantes):
 
     print("Estudiante no encontrado.")
 
+def ver_informacion_estudiante(estudiantes, email):
+    for estudiante in estudiantes:
+        if estudiante.email == email:
+            estudiante.ver_informacion()
+            return
+
 # Función para crear una cuenta de estudiante
 def crear_cuenta_estudiante(estudiantes):
     print("Crear nueva cuenta de estudiante:")
+    nombre = input("Nombre del estudiante: ")
     email = input("Ingrese el email del estudiante: ")
     clave = input("Ingrese la clave del estudiante: ")
 
-    registrar_estudiante(estudiantes, email, clave)
+    if not validar_email(email):
+        print("Email no válido.")
+        return
+
+    for estudiante in estudiantes:
+        if estudiante.email == email:
+            print("El email ya está registrado.")
+            return
+
+    estudiantes.append(Estudiante(nombre, email, clave))
+    print("Registro exitoso.")
 
 def guardar_registros(estudiantes, beneficios):
     with open("registros.dat", "wb") as registros_file:
