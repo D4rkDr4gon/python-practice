@@ -1,12 +1,17 @@
 import re
+import pickle
 
 # Módulo 1: Gestor de Estudiantes
 
 class Estudiante:
     def __init__(self, email, clave):
+        global numero_legajo
+        self.legajo = numero_legajo
+        numero_legajo += 1
         self.email = email
         self.clave = clave
-        self.creditos = 1000
+        self.nombre = ""
+        self.meritos = 0
 
 def validar_email(email):
     patron = r'\b[A-Za-z0-9._%+-]+@frba.utn.edu.ar\b'
@@ -42,8 +47,8 @@ def listar_beneficios(beneficios):
         print(f"{beneficio.nombre} - Costo: {beneficio.costo} créditos")
 
 def acreditar_logros(estudiante, puntos):
-    estudiante.creditos += puntos
-    print(f"Se acreditaron {puntos} puntos. Créditos disponibles: {estudiante.creditos}")
+    estudiante.meritos += puntos
+    print(f"Se acreditaron {puntos} puntos. Méritos disponibles: {estudiante.meritos}")
 
 # Módulo 3: Consumidor de Beneficios
 
@@ -54,46 +59,44 @@ def iniciar_sesion(estudiantes, beneficios):
     for estudiante in estudiantes:
         if estudiante.email == email and estudiante.clave == clave:
             print("Inicio de sesión exitoso.")
-            mostrar_menu_beneficios(estudiante, beneficios)
+            ver_y_modificar_informacion(estudiante)
+            guardar_registros(estudiantes, beneficios)
             return
 
     print("Credenciales incorrectas.")
 
-def mostrar_menu_beneficios(estudiante, beneficios):
+def ver_y_modificar_informacion(estudiante):
+    print("--- Información del Estudiante ---")
+    print(f"Nombre: {estudiante.nombre}")
+    print(f"Email: {estudiante.email}")
+    print(f"Cantidad de Méritos: {estudiante.meritos}")
+    print(f"Legajo: {estudiante.legajo}")
+    print(f"Clave: {estudiante.clave}")
+
     while True:
-        print("\n--- Menú de Beneficios ---")
-        print("1. Mostrar créditos disponibles")
-        print("2. Mostrar beneficios disponibles")
-        print("3. Consumir un beneficio")
-        print("4. Acreditar logros")
-        print("5. Cerrar sesión")
+        print("\n1. Modificar Nombre")
+        print("2. Modificar Email")
+        print("3. Modificar Clave")
+        print("4. Salir")
 
         opcion = input("Elija una opción: ")
 
         if opcion == '1':
-            print(f"Créditos disponibles: {estudiante.creditos}")
+            nuevo_nombre = input("Ingrese el nuevo nombre: ")
+            estudiante.nombre = nuevo_nombre
+            print("Nombre modificado.")
         elif opcion == '2':
-            listar_beneficios(beneficios)
+            nuevo_email = input("Ingrese el nuevo email: ")
+            estudiante.email = nuevo_email
+            print("Email modificado.")
         elif opcion == '3':
-            consumir_beneficio(estudiante, beneficios)
+            nueva_clave = input("Ingrese la nueva clave: ")
+            estudiante.clave = nueva_clave
+            print("Clave modificada.")
         elif opcion == '4':
-            puntos = int(input("Ingrese la cantidad de puntos a acreditar: "))
-            acreditar_logros(estudiante, puntos)
-        elif opcion == '5':
-            return
+            break
         else:
             print("Opción no válida. Intente nuevamente.")
-
-def consumir_beneficio(estudiante, beneficios):
-    nombre_beneficio = input("Ingrese el nombre del beneficio que desea consumir: ")
-
-    for beneficio in beneficios:
-        if beneficio.nombre == nombre_beneficio and beneficio.costo <= estudiante.creditos:
-            estudiante.creditos -= beneficio.costo
-            print(f"Beneficio '{nombre_beneficio}' consumido. Créditos restantes: {estudiante.creditos}")
-            return
-
-    print("No se pudo consumir el beneficio.")
 
 # Módulo 4: Administración
 
@@ -151,6 +154,16 @@ def crear_cuenta_estudiante(estudiantes):
 
     registrar_estudiante(estudiantes, email, clave)
 
+def guardar_registros(estudiantes, beneficios):
+    with open("registros.dat", "wb") as registros_file:
+        pickle.dump((estudiantes, beneficios), registros_file)
+
+def guardar_logros_y_beneficios(beneficios):
+    with open("logrosYbeneficios.txt", "w") as logros_file:
+        logros_file.write("Beneficios disponibles:\n")
+        for beneficio in beneficios:
+            logros_file.write(f"{beneficio.nombre} - Costo: {beneficio.costo} créditos\n")
+
 # Define las listas para almacenar estudiantes, beneficios y administradores
 estudiantes = []
 beneficios = []
@@ -159,6 +172,9 @@ administradores = []
 # Agrega administradores
 administradores.append(Administrador("admin1", "contraseña1"))
 administradores.append(Administrador("admin2", "contraseña2"))
+
+# Inicializa el número de legajo
+numero_legajo = 1000000
 
 # Ejecuta el programa principal
 while True:
@@ -186,6 +202,8 @@ while True:
     elif opcion == '3':
         crear_cuenta_estudiante(estudiantes)
     elif opcion == '4':
+        guardar_registros(estudiantes, beneficios)
+        guardar_logros_y_beneficios(beneficios)
         break
     else:
         print("Opción no válida. Intente nuevamente.")
