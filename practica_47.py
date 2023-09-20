@@ -139,3 +139,39 @@ def modificar_datos_estudiante(estudiantes):
             return
 
     print("Estudiante no encontrado.")
+
+# Define las listas para almacenar estudiantes, beneficios y administradores
+estudiantes = []
+beneficios = []
+administradores = []
+
+# Agrega administradores
+administradores.append(Administrador("admin1", "contraseña1"))
+administradores.append(Administrador("admin2", "contraseña2"))
+
+# Ejecuta el programa principal
+while True:
+    print("\n--- Menú Principal ---")
+    print("1. Iniciar sesión como estudiante")
+    print("2. Iniciar sesión como administrador")
+    print("3. Salir")
+
+    opcion = input("Elija una opción: ")
+
+    if opcion == '1':
+        iniciar_sesion(estudiantes, beneficios)
+    elif opcion == '2':
+        while True:
+            username = input("Ingrese el nombre de usuario del administrador: ")
+            password = input("Ingrese la contraseña del administrador: ")
+
+            if autenticar_administrador(administradores, username, password):
+                print("Inicio de sesión de administrador exitoso.")
+                menu_administracion(estudiantes, beneficios)
+                break
+            else:
+                print("Credenciales de administrador incorrectas. Intente nuevamente.")
+    elif opcion == '3':
+        break
+    else:
+        print("Opción no válida. Intente nuevamente.")
