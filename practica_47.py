@@ -113,7 +113,8 @@ def menu_administracion(estudiantes, beneficios):
         print("\n--- Menú de Administración ---")
         print("1. Modificar datos de estudiante")
         print("2. Agregar beneficio")
-        print("3. Salir")
+        print("3. Crear cuenta de estudiante")
+        print("4. Salir")
 
         opcion = input("Elija una opción: ")
 
@@ -124,6 +125,8 @@ def menu_administracion(estudiantes, beneficios):
             costo = int(input("Ingrese el costo del beneficio en créditos: "))
             agregar_beneficio(beneficios, nombre, costo)
         elif opcion == '3':
+            crear_cuenta_estudiante(estudiantes)
+        elif opcion == '4':
             return
         else:
             print("Opción no válida. Intente nuevamente.")
@@ -140,6 +143,14 @@ def modificar_datos_estudiante(estudiantes):
 
     print("Estudiante no encontrado.")
 
+# Función para crear una cuenta de estudiante
+def crear_cuenta_estudiante(estudiantes):
+    print("Crear nueva cuenta de estudiante:")
+    email = input("Ingrese el email del estudiante: ")
+    clave = input("Ingrese la clave del estudiante: ")
+
+    registrar_estudiante(estudiantes, email, clave)
+
 # Define las listas para almacenar estudiantes, beneficios y administradores
 estudiantes = []
 beneficios = []
@@ -154,7 +165,8 @@ while True:
     print("\n--- Menú Principal ---")
     print("1. Iniciar sesión como estudiante")
     print("2. Iniciar sesión como administrador")
-    print("3. Salir")
+    print("3. Crear cuenta de estudiante")
+    print("4. Salir")
 
     opcion = input("Elija una opción: ")
 
@@ -172,6 +184,8 @@ while True:
             else:
                 print("Credenciales de administrador incorrectas. Intente nuevamente.")
     elif opcion == '3':
+        crear_cuenta_estudiante(estudiantes)
+    elif opcion == '4':
         break
     else:
         print("Opción no válida. Intente nuevamente.")
