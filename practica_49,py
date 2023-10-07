@@ -1,0 +1,59 @@
+# Importamos la librería para poder usar la función input()
+import sys
+
+# Definimos la estructura del nodo
+class NodoColaBanco:
+    def __init__(self, valor):
+        self.nombre = valor
+        self.siguiente = None
+
+# Función para insertar un elemento en la cola
+def encolar(frente, final, valor):
+    nuevoNodo = NodoColaBanco(valor)
+    if final == None:
+        frente = final = nuevoNodo
+    else:
+        final.siguiente = nuevoNodo
+        final = nuevoNodo
+    return frente, final
+
+# Función para eliminar y obtener el elemento del frente de la cola
+def desencolar(frente, final):
+    if frente == None:
+        print("La cola está vacía.")
+        return frente, final, None # Valor de error
+    valor = frente.nombre
+    temp = frente
+    frente = frente.siguiente
+    if frente == None:
+        final = None # Si se elimina el último elemento, actualizar 'final'
+    del temp
+    return frente, final, valor
+
+# Función para verificar si la cola está vacía
+def isEmpty(frente):
+    return frente == None
+
+#declaramos las colas
+frente = None
+final = None
+
+while True:
+    opcion = input("---- cola del banco-----\n1. nuevo cliente\n2. primer cliente en la cola\n3. cliente a la espera de ser atendido\n4. salir\n")
+
+    if opcion == "1":
+        nombre = input("-----Saque turno-------\nnombre: ")
+        frente, final = encolar(frente, final, nombre)
+    elif opcion == "2":
+        frente, final, valor = desencolar(frente, final)
+        if valor != None:
+            print("El primer cliente en la cola es:", valor)
+    elif opcion == "3":
+        if isEmpty(frente):
+            print("La cola está vacía.")
+        else:
+            print("El cliente a la espera de ser atendido es:", frente.nombre)
+    elif opcion == "4":
+        sys.exit()
+    else:
+        print("Opción inválida. Intente de nuevo.")
